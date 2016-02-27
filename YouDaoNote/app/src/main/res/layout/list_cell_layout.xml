@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/logo"
+            />
+        <TextView
+            android:id="@+id/listView_title"
+            android:layout_toRightOf="@+id/logo"
+            android:text="你好啊按时打算的撒的撒asdasd"
+            android:layout_marginLeft="5dp"
+            android:textSize="20sp"
+            android:maxEms="10"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/listView_noReload"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/noreload"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/listView_data"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2016-02-26 02:33"/>
+</LinearLayout>
