@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <FrameLayout
+        android:id="@+id/note_edit_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             layout="@layout/note_show_actionbar"/>
         <TextView
             android:layout_gravity="center"
@@ -18,26 +20,28 @@
             android:textColor="#fff"
             android:layout_centerInParent="true"/>
     </FrameLayout>
-
-    <EditText
-        android:id="@+id/note_edit_title"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+    <LinearLayout
+        android:layout_below="@id/note_edit_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:hint="点击输入标题"
-        />
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:orientation="vertical">
+        <EditText
+            android:id="@+id/note_edit_title"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:hint="点击输入标题"
+            />
         <ScrollView
             android:id="@+id/myScrollView"
             android:fillViewport="false"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <EditText
+                android:paddingBottom="60dp"
                 android:textColor="#242829"
                 android:lineSpacingExtra="5dp"
                 android:textSize="20sp"
@@ -49,9 +53,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </ScrollView>
-        <include layout="@layout/note_edit_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/myScrollView"/>
-    </RelativeLayout>
-</LinearLayout>
+    </LinearLayout>
+
+    <include layout="@layout/note_edit_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

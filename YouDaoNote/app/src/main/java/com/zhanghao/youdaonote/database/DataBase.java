@@ -17,7 +17,7 @@ public class DataBase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE NoteContent("+
         "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
         "ID INTEGER DEFAULT \"\","+
-        "data TEXT DEFAULT \"\","+
+        "date TEXT DEFAULT \"\","+
         "title TEXT DEFAULT \"\","+
         "content TEXT DEFAULT \"\")");
     }

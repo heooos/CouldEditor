@@ -42,10 +42,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_activity);
-
         init();
         initEvent();
         selectTab(0);
+
     }
 
     private void init(){

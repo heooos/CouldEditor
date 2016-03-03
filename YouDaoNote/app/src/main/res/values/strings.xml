@@ -3,4 +3,5 @@
     <string name="action_settingOne">SettingOne</string>
     <string name="action_settingTwo">SettingTwo</string>
     <string name="action_settingThree">SettingThree</string>
+    <string name="title_activity_register">RegisterActivity</string>
 </resources>

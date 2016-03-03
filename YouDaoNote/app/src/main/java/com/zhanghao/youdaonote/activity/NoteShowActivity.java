@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zhanghao.youdaonote.R;
+import com.zhanghao.youdaonote.database.DeleteNoteFromDB;
 
 public class NoteShowActivity extends Activity implements View.OnClickListener{
 
@@ -18,64 +18,29 @@ public class NoteShowActivity extends Activity implements View.OnClickListener{
     private TextView title_tv;
     private ImageView back;
     private ImageButton edit,delete;
+    private String title,content,date;
+    public static final int ACTIVITY_CODE = 3;  //请求码
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.note_show_activity);
 
-        initView();
+        init();
 
         edit.setOnClickListener(this);
         delete.setOnClickListener(this);
         back.setOnClickListener(this);
-        String title = getIntent().getStringExtra("title");
+
+        title = getIntent().getStringExtra("title");
+        content = getIntent().getStringExtra("content");
+        date = getIntent().getStringExtra("date");
 
         title_tv.setText(title);
-        final String html="<html>\n" +
-                "\n" +
-                "<body>\n" +
-                "\n" +
-                "<p>每个表格由 table 标签开始。</p>\n" +
-                "<p>每个表格行由 tr 标签开始。</p>\n" +
-                "<p>每个表格数据由 td 标签开始。</p>\n" +
-                "\n" +
-                "<h4>一列：</h4>\n" +
-                "<table border=\"1\">\n" +
-                "<tr>\n" +
-                "  <td>100</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "\n" +
-                "<h4>一行三列：</h4>\n" +
-                "<table border=\"1\">\n" +
-                "<tr>\n" +
-                "  <td>100</td>\n" +
-                "  <td>200</td>\n" +
-                "  <td>300</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "\n" +
-                "<h4>两行三列：</h4>\n" +
-                "<table border=\"1\">\n" +
-                "<tr>\n" +
-                "  <td>100</td>\n" +
-                "  <td>200</td>\n" +
-                "  <td>300</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "  <td>400</td>\n" +
-                "  <td>500</td>\n" +
-                "  <td>600</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "\n" +
-                "</body>\n" +
-                "</html>\n";
-        content_tv.setText(Html.fromHtml(html));
+        content_tv.setText(Html.fromHtml(content));
     }
 
-    private void initView() {
+    private void init() {
         content_tv = (TextView) findViewById(R.id.content_tv);
         title_tv = (TextView) findViewById(R.id.title_tv);
         back = (ImageView) findViewById(R.id.back);
@@ -92,13 +57,30 @@ public class NoteShowActivity extends Activity implements View.OnClickListener{
             case R.id.note_show_edit:
                 Intent i = new Intent(this,NoteEditActivity.class);
                 i.putExtra("title",title_tv.getText().toString());
-                i.putExtra("content",content_tv.getText().toString());
-                Log.d("NoteShowActivity", title_tv.getText().toString());
-                startActivity(i);
+                i.putExtra("content", content_tv.getText().toString());
+                i.putExtra("date",date);
+                i.putExtra("className","NoteShowActivity");
+                startActivityForResult(i, ACTIVITY_CODE);
                 break;
             case  R.id.note_show_delete:
-                // TODO: 2016/2/28 删除按钮功能添加
+                DeleteNoteFromDB deleter = new DeleteNoteFromDB(this,date);
+                deleter.delete();
+                finish();
+                break;
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case ACTIVITY_CODE:
+                if (resultCode == RESULT_OK){
+                    title_tv.setText(data.getExtras().getString("title"));
+                    content_tv.setText(Html.fromHtml(data.getExtras().getString("content")));
+                }
                 break;
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:background="#f5eefb"
     android:padding="6dp"
+    android:visibility="visible"
     >
     <ImageButton
         android:id="@+id/note_show_edit"

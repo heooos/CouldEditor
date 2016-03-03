@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#dbdada"
     >
     <LinearLayout
         android:gravity="center"
@@ -19,7 +20,7 @@
             android:layout_centerInParent="true"/>
     </LinearLayout>
     <ScrollView
-        android:background="#dbdada"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -28,6 +29,7 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
+                android:id="@+id/setting_login"
                 android:background="#fff"
                 android:layout_marginTop="15dp"
                 android:padding="15dp"
