@@ -16,7 +16,7 @@ public class DataBase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE NoteContent("+
         "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
-        "ID INTEGER DEFAULT \"\","+
+        "ID TEXT DEFAULT \"\","+
         "date TEXT DEFAULT \"\","+
         "title TEXT DEFAULT \"\","+
         "content TEXT DEFAULT \"\")");

@@ -2,7 +2,6 @@ package com.zhanghao.youdaonote.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
@@ -21,7 +20,7 @@ import com.zhanghao.youdaonote.fragment.SettingFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private long exitTime;
     private ViewPager viewPager;
@@ -45,7 +44,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         init();
         initEvent();
         selectTab(0);
-
     }
 
     private void init(){

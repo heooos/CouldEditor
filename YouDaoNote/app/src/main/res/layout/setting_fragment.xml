@@ -36,18 +36,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:id="@+id/login_icon"
+                    android:id="@+id/settingFragment_headImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/setting_contact"/>
                 <TextView
+                    android:id="@+id/settingFragment_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="未登陆"
                     android:textSize="15sp"
                     android:layout_marginLeft="10dp"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/login_icon"/>
+                    android:layout_toRightOf="@id/settingFragment_headImage"/>
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

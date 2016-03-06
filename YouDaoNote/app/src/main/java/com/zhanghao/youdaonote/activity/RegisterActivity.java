@@ -1,6 +1,5 @@
 package com.zhanghao.youdaonote.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +12,7 @@ import com.zhanghao.youdaonote.entity.NoteUser;
 
 import cn.bmob.v3.listener.SaveListener;
 
-public class RegisterActivity extends Activity implements View.OnClickListener {
+public class RegisterActivity extends BaseActivity implements View.OnClickListener {
 
     private ImageView back;
     private EditText et_accountNumber,et_password;
@@ -57,13 +56,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
      * 注册
      */
     private void singUp(){
-        NoteUser user = new NoteUser();
+        final NoteUser user = new NoteUser();
         user.setUsername(et_accountNumber.getText().toString().trim());
         user.setPassword(et_password.getText().toString());
         user.signUp(this, new SaveListener() {
             @Override
             public void onSuccess() {
-                Toast.makeText(RegisterActivity.this,"注册成功，请返回登录",Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this,"注册成功，请登录",Toast.LENGTH_SHORT).show();
+                finish();
             }
 
             @Override

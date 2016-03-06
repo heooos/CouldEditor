@@ -1,6 +1,5 @@
 package com.zhanghao.youdaonote.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
@@ -10,16 +9,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zhanghao.youdaonote.R;
+import com.zhanghao.youdaonote.constants.Conf;
 import com.zhanghao.youdaonote.database.DeleteNoteFromDB;
 
-public class NoteShowActivity extends Activity implements View.OnClickListener{
+public class NoteShowActivity extends BaseActivity implements View.OnClickListener{
 
     private TextView content_tv;
     private TextView title_tv;
     private ImageView back;
     private ImageButton edit,delete;
     private String title,content,date;
-    public static final int ACTIVITY_CODE = 3;  //请求码
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +60,11 @@ public class NoteShowActivity extends Activity implements View.OnClickListener{
                 i.putExtra("content", content_tv.getText().toString());
                 i.putExtra("date",date);
                 i.putExtra("className","NoteShowActivity");
-                startActivityForResult(i, ACTIVITY_CODE);
+                startActivityForResult(i, Conf.ACTIVITY_CODE);
                 break;
             case  R.id.note_show_delete:
-                DeleteNoteFromDB deleter = new DeleteNoteFromDB(this,date);
-                deleter.delete();
+                DeleteNoteFromDB deleter = new DeleteNoteFromDB(this);
+                deleter.delete(date);
                 finish();
                 break;
 
@@ -74,7 +74,7 @@ public class NoteShowActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
-            case ACTIVITY_CODE:
+            case Conf.ACTIVITY_CODE:
                 if (resultCode == RESULT_OK){
                     title_tv.setText(data.getExtras().getString("title"));
                     content_tv.setText(Html.fromHtml(data.getExtras().getString("content")));

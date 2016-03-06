@@ -1,6 +1,8 @@
 package com.zhanghao.youdaonote.fragment;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -21,40 +23,49 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.zhanghao.youdaonote.R;
+import com.zhanghao.youdaonote.TApplication;
 import com.zhanghao.youdaonote.activity.LoginActivity;
 import com.zhanghao.youdaonote.activity.NoteEditActivity;
 import com.zhanghao.youdaonote.activity.NoteShowActivity;
+import com.zhanghao.youdaonote.activity.UserInfoActivity;
 import com.zhanghao.youdaonote.adapter.CustomAdapter;
 import com.zhanghao.youdaonote.adapter.ItemBean;
 import com.zhanghao.youdaonote.database.DeleteNoteFromDB;
-import com.zhanghao.youdaonote.database.ReadNoteFromDB;
+import com.zhanghao.youdaonote.database.QueryNoteFromDB;
+import com.zhanghao.youdaonote.database.QueryNoteFromWebDB;
 
 import java.util.List;
 
 /**
  * Created by ZH on 2016/2/21.
  */
-public class NoteFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class NoteFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, QueryNoteFromWebDB.IRefreshListener {
 
     private ListView listView;
     private FloatingActionButton fabEdit;
     private ImageView contactImg;
-    private CustomAdapter adapter;
-    private ReadNoteFromDB readNoteFromDB;
+    public static CustomAdapter adapter;
+    private QueryNoteFromDB queryNoteFromDB;
     private List<ItemBean> list;
     private  View firstView;
+    private PopupWindow popupWindow;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         firstView = inflater.inflate(R.layout.note_fragment,container,false);
-
+        synchroDataFromWebDB();
         init(firstView);
         initEvent();
         dataRefresh();
         return firstView;
     }
 
+    private void synchroDataFromWebDB() {
+        QueryNoteFromWebDB q = new QueryNoteFromWebDB(getContext());
+        q.synchroData();
+        q.setInterface(this);
+    }
 
     private void initEvent() {
         contactImg.setOnClickListener(this);
@@ -90,8 +101,8 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     private void dataRefresh() {
-        readNoteFromDB = new ReadNoteFromDB(getContext());
-        list = readNoteFromDB.readNote();
+        queryNoteFromDB = new QueryNoteFromDB(getContext());
+        list = queryNoteFromDB.readNote();
         adapter = new CustomAdapter(getContext(),list);
         listView.setAdapter(adapter);
     }
@@ -106,7 +117,12 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
                 break;
             case R.id.contact_img:
                 Intent loginIntent = new Intent(getContext(), LoginActivity.class);
-                startActivity(loginIntent);
+                Intent userInfoIntent = new Intent(getContext(), UserInfoActivity.class);
+                if (TApplication.instance.hasCurrentUser()){
+                    startActivity(userInfoIntent);
+                }else {
+                    startActivity(loginIntent);
+                }
                 break;
         }
     }
@@ -130,9 +146,8 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
 
         return true;
     }
-
     private void showPopupWindows(final int itemPosition) {
-
+        PopupWindowListener listener=new PopupWindowListener(itemPosition);
         View contentView = LayoutInflater.from(getContext()).inflate(R.layout.popupwindow_layout,null);
         Button cancel = (Button) contentView.findViewById(R.id.popupWindows_cancel);
         Button rename = (Button) contentView.findViewById(R.id.popupWindows_rename);
@@ -140,45 +155,74 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
 
         TextView tv_showName = (TextView) contentView.findViewById(R.id.popupWindows_fileName);
 
-        final PopupWindow popupWindow = new PopupWindow(contentView, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT,true);
+        popupWindow = new PopupWindow(contentView, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT,true);
         popupWindow.setTouchable(true);
         popupWindow.setFocusable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xb0000000));
-       // popupWindow.showAsDropDown(view, view.getMeasuredWidth() / 2, 0);
         popupWindow.showAtLocation(firstView, Gravity.BOTTOM, 0, 0);
-
         tv_showName.setText("文件名：" + list.get(itemPosition).noteTitle);
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-            }
-        });
-        rename.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                DeleteNoteFromDB delete = new DeleteNoteFromDB(getContext(),list.get(itemPosition).noteDate);
-                delete.delete();
-                list.remove(itemPosition);
-                adapter.notifyDataSetChanged();
-                popupWindow.dismiss();
-            }
-        });
+        cancel.setOnClickListener(listener);
+        rename.setOnClickListener(listener);
+        delete.setOnClickListener(listener);
     }
+
 
     @Override
     public void onResume() {
         Log.d("NoteFragment", "onResume()");
         dataRefresh();
         super.onResume();
+    }
+
+    @Override
+    public void onRefresh() {
+        dataRefresh();
+    }
+
+    /**
+     * 内部类处理popupwindows视图的点击事件
+     */
+    class PopupWindowListener implements View.OnClickListener{
+
+        private final int itemPosition;
+
+        public PopupWindowListener(int itemPosition) {
+            this.itemPosition=itemPosition;
+        }
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.popupWindows_cancel:
+                    popupWindow.dismiss();
+                    break;
+                case R.id.popupWindows_rename:
+                    popupWindow.dismiss();
+                    break;
+                case R.id.popupWindows_delete:
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+                    dialog.setTitle("警告");
+                    dialog.setMessage("确定删除此条信息么？");
+                    dialog.setCancelable(false);
+                    dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DeleteNoteFromDB delete = new DeleteNoteFromDB(getContext());
+                            delete.delete(list.get(itemPosition).noteDate);
+                            list.remove(itemPosition);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                    dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    dialog.show();
+                    popupWindow.dismiss();
+                    break;
+            }
+        }
     }
 
 }

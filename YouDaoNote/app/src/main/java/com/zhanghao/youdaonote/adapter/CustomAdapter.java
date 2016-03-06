@@ -28,6 +28,15 @@ public class CustomAdapter extends BaseAdapter {
     }
 
 
+    @Override
+    public int getViewTypeCount() {
+        return super.getViewTypeCount();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
 
     @Override
     public int getCount() {
@@ -58,6 +67,7 @@ public class CustomAdapter extends BaseAdapter {
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+
         ItemBean bean = itemBeanList.get(position);
         viewHolder.image.setImageResource(bean.icon);
         viewHolder.title.setText(bean.noteTitle);

@@ -1,6 +1,5 @@
 package com.zhanghao.youdaonote.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,15 +21,18 @@ import android.widget.Toast;
 
 import com.zhanghao.youdaonote.R;
 import com.zhanghao.youdaonote.database.AddNoteToDB;
+import com.zhanghao.youdaonote.database.QueryNoteFromDB;
 import com.zhanghao.youdaonote.database.UpdateNoteToDB;
 
 import java.io.FileNotFoundException;
 import java.util.Calendar;
 
+import cn.bmob.v3.BmobUser;
+
 /**
  * Created by ZH on 2016/2/24.
  */
-public class NoteEditActivity extends Activity implements View.OnClickListener {
+public class NoteEditActivity extends BaseActivity implements View.OnClickListener {
 
     private EditText titleEditText,contentEditText;
     private String title,content,date;
@@ -56,15 +58,17 @@ public class NoteEditActivity extends Activity implements View.OnClickListener {
         initEvent();
 
         title = getIntent().getStringExtra("title");
-        content = getIntent().getStringExtra("content");
+      //  content = getIntent().getStringExtra("content");
         date = getIntent().getStringExtra("date");
 
         if (title != null){
             Log.d("NoteEditActivity", title);
             titleEditText.setText(title);
         }
-        if (content != null){
+        if (/*content != null || */ date != null){
+            content = new QueryNoteFromDB(this).readContent(date);
             Log.d("0.0", content);
+
             contentEditText.setText(content);
             contentEditText.setSelection(content.length());
             contentEditText.requestFocus();
@@ -156,9 +160,6 @@ public class NoteEditActivity extends Activity implements View.OnClickListener {
 
     /**
      * 图片缩放
-     * @param originalBitmap 原始的Bitmap
-     * @param newWidth 自定义宽度
-     * @param newHeight自定义高度
      * @return 缩放后的Bitmap
      */
     private Bitmap resizeImage(Bitmap originalBitmap, int newWidth, int newHeight){
@@ -250,8 +251,8 @@ public class NoteEditActivity extends Activity implements View.OnClickListener {
      */
     private void addNoteToDB(){
         if (getIntent().getStringExtra("className").equals("NoteFragment")){
-            AddNoteToDB addNoteToDB = new AddNoteToDB(this,getCurrentDate(),titleEditText.getText().toString(),contentEditText.getText().toString());
-            addNoteToDB.addToDB();
+            AddNoteToDB addNoteToDB = new AddNoteToDB(this,getCurrentDate(),titleEditText.getText().toString(),contentEditText.getText().toString(), BmobUser.getCurrentUser(this).getUsername());
+            addNoteToDB.addToDB(true);
         }else {
             UpdateNoteToDB updater = new UpdateNoteToDB(this,titleEditText.getText().toString(),contentEditText.getText().toString(),date);
             updater.update();

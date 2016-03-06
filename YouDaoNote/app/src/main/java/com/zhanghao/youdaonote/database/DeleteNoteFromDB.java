@@ -10,15 +10,16 @@ public class DeleteNoteFromDB {
 
     private SQLiteDatabase dbWrite;
     private DataBase dataBase;
-    private String date;
 
-    public DeleteNoteFromDB(Context context,String date){
+    public DeleteNoteFromDB(Context context){
         dataBase = new DataBase(context);
         dbWrite = dataBase.getWritableDatabase();
-        this.date = date;
-        delete();
     }
-    public void delete(){
+    public void delete(String date){
         dbWrite.delete("NoteContent", "date = ?", new String[]{date});
+    }
+
+    public void deleteAll(String userName){
+        dbWrite.delete("NoteContent", "ID = ?", new String[]{userName});
     }
 }

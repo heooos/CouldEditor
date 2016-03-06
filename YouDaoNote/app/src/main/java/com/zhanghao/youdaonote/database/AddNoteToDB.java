@@ -3,12 +3,6 @@ package com.zhanghao.youdaonote.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
-
-import com.zhanghao.youdaonote.entity.NoteTable;
-
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.listener.SaveListener;
 
 /**
  * Created by ZH on 2016/3/1.
@@ -19,9 +13,9 @@ public class AddNoteToDB {
     private DataBase dataBase;
 
     private Context context;
-    private String date,title,content;
+    private String date,title,content,userName;
 
-    public AddNoteToDB(Context _context,String _date,String _title,String _content){
+    public AddNoteToDB(Context _context,String _date,String _title,String _content,String userName){
 
         dataBase = new DataBase(_context);
         dbWrite = dataBase.getWritableDatabase();
@@ -30,34 +24,19 @@ public class AddNoteToDB {
         this.date = _date;
         this.title = _title;
         this.content = _content;
-
+        this.userName = userName;
     }
-    public void addToDB(){
+    public void addToDB(boolean tag){
         ContentValues values = new ContentValues();
-        values.put("date",date);
+        values.put("date", date);
         values.put("title", title);
         values.put("content", content);
+        values.put("ID", userName);
         dbWrite.insert("NoteContent", null, values);
-        addToWeb();
+        if (tag){
+            new AddNoteToWebDB(context,title,content,date,userName);//在此将数据存储到云端
+        }
     }
 
-    private void addToWeb() {
-        NoteTable noteTable = new NoteTable();
-        noteTable.setNoteTitle(title);
-        noteTable.setNoteContent(content);
-        noteTable.setDate(date);
-        noteTable.setUserName(BmobUser.getCurrentUser(context).getUsername());
-        noteTable.save(context, new SaveListener() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(context, "网络段保存成功", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int i, String s) {
-
-            }
-        });
-    }
 
 }
