@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.zhanghao.youdaonote.DateTool;
+
 /**
  * Created by ZH on 2016/3/1.
  */
@@ -11,25 +13,26 @@ public class UpdateNoteToDB {
 
     private SQLiteDatabase dbWrite;
     private DataBase dataBase;
-    private String title,content,date;
+    private Context context;
 
-    public UpdateNoteToDB(Context context,String title,String content,String date){
-
-        this.title = title;
-        this.content = content;
-        this.date = date;
+    public UpdateNoteToDB(Context context){
 
         dataBase = new DataBase(context);
         dbWrite = dataBase.getWritableDatabase();
-
-        update();
+        this.context = context;
     }
 
-    public void update(){
+    public void updateForSynchronization(ContentValues values,String date){
+        dbWrite.update("NoteContent", values, "date = ?", new String[]{date});
+    }
+
+    public void update(String title,String content,String date,int isReload){
         ContentValues values = new ContentValues();
         values.put("title",title);
-        values.put("content",content);
-        dbWrite.update("NoteContent",values,"date = ?",new String[]{date});
-
+        values.put("content", content);
+        values.put("isReload",isReload);
+        values.put("date", new DateTool().getCurrentDate());
+        dbWrite.update("NoteContent", values, "date = ?", new String[]{date});
     }
+
 }

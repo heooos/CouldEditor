@@ -8,15 +8,17 @@ import com.zhanghao.youdaonote.entity.NoteTable;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
+ * 数据同步到后台数据库
  * Created by ZH on 2016/3/6.
  */
 public class AddNoteToWebDB {
 
     private String title,content,date,userName;
+    private int isReload;
     private Context context;
 
-    public AddNoteToWebDB(Context context,String title,String content,String date,String userName){
-
+    public AddNoteToWebDB(Context context,String title,String content,String date,int isReload,String userName){
+        this.isReload = isReload;
         this.context = context;
         this.title =title;
         this.content = content;
@@ -31,10 +33,12 @@ public class AddNoteToWebDB {
         noteTable.setNoteContent(content);
         noteTable.setNoteDate(date);
         noteTable.setUserName(userName);
+        noteTable.setIsReload(isReload);
         noteTable.save(context, new SaveListener() {
             @Override
             public void onSuccess() {
-                Toast.makeText(context, "网络端保存成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "同步成功", Toast.LENGTH_SHORT).show();
+                new QueryNoteFromWebDB(context).QueryAndSetObjId(date);
             }
 
             @Override

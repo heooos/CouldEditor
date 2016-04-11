@@ -17,7 +17,7 @@
         <TextView
             android:id="@+id/listView_title"
             android:layout_toRightOf="@+id/logo"
-            android:text="你好啊按时打算的撒的撒asdasd"
+            android:text="这是一条笔记的题目，比较长，所以"
             android:layout_marginLeft="5dp"
             android:textSize="20sp"
             android:maxEms="10"
@@ -26,11 +26,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageView
-            android:id="@+id/listView_noReload"
+            android:id="@+id/noReload"
+            android:visibility="gone"
             android:layout_alignParentRight="true"
+            android:src="@drawable/noreload"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/noreload"/>
+            android:layout_height="wrap_content" />
     </RelativeLayout>
     <TextView
         android:id="@+id/listView_data"

@@ -1,8 +1,12 @@
 package com.zhanghao.youdaonote.database;
 
+import android.content.ContentValues;
 import android.content.Context;
-import android.widget.Toast;
+import android.database.Cursor;
+import android.util.Log;
 
+import com.zhanghao.youdaonote.DateTool;
+import com.zhanghao.youdaonote.TApplication;
 import com.zhanghao.youdaonote.entity.NoteTable;
 
 import java.util.List;
@@ -18,34 +22,43 @@ public class QueryNoteFromWebDB {
 
     private final Context context;
     private  AddNoteToDB addNoteToDB;
-    private DeleteNoteFromDB deleteNoteFromDB;
     private IRefreshListener iRefreshListener;
+    private String userName;
+    private QueryNoteFromDB queryNoteFromDB;
 
     public QueryNoteFromWebDB(final Context context){
         this.context = context;
+        queryNoteFromDB = new QueryNoteFromDB(context);
+        if (TApplication.instance.hasCurrentUser()){
+            userName = new BmobUser().getCurrentUser(context).getUsername();
+        }
     }
 
+    /**
+     * 同步云端数据到本地！ 将当前用户id作为查询字。将所有数据同步到本地。
+     */
     public void synchroData() {
-        final String userName = new BmobUser().getCurrentUser(context).getUsername();
+
         BmobQuery<NoteTable> query = new BmobQuery<>();
         query.addWhereEqualTo("userName", userName);
         query.setLimit(50);
         query.findObjects(context, new FindListener<NoteTable>() {
             @Override
             public void onSuccess(List<NoteTable> list) {
-                deleteNoteFromDB = new DeleteNoteFromDB(context);
-                deleteNoteFromDB.deleteAll(userName);
+
                 for (NoteTable noteTable:list){
-                    addNoteToDB = new AddNoteToDB(context,noteTable.getNoteDate(),noteTable.getNoteTitle(),noteTable.getNoteContent(),userName);
-                    addNoteToDB.addToDB(false);
+                    Cursor cursor1 = queryNoteFromDB.getNoDowloadData(noteTable.getObjectId());
+                    Cursor cursor2 = queryNoteFromDB.queryByDate(noteTable.getNoteDate());
+                    if ((!cursor1.moveToNext()) && (!cursor2.moveToNext())){
+                        addNoteToDB = new AddNoteToDB(context);
+                        addNoteToDB.addToDB(noteTable.getNoteDate(),noteTable.getNoteTitle(),noteTable.getNoteContent(),noteTable.getIsReload(),noteTable.getObjectId(),userName);
+                    }
                 }
                 iRefreshListener.onRefresh();
-                Toast.makeText(context, "云端数据同步成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(int i, String s) {
-
             }
         });
     }
@@ -58,6 +71,46 @@ public class QueryNoteFromWebDB {
      */
     public interface IRefreshListener{
         void onRefresh();
+    }
+
+    public void QueryNoteAndUpdate(final String objId, final String title, final String content){
+        BmobQuery<NoteTable> query = new BmobQuery<>();
+        query.addWhereEqualTo("objectId", objId);
+        query.findObjects(context, new FindListener<NoteTable>() {
+            @Override
+            public void onSuccess(List<NoteTable> list) {
+                for (NoteTable noteTable:list){
+                    Log.d("noteTable",noteTable.getObjectId());
+                    new UpdateNoteToWebDB(context).update(noteTable.getObjectId(), title, content, new DateTool().getCurrentDate());;
+                }
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+            }
+        });
+    }
+
+    public void QueryAndSetObjId(final String date){
+        BmobQuery<NoteTable> query = new BmobQuery<>();
+        query.addWhereEqualTo("noteDate", date);
+        query.findObjects(context, new FindListener<NoteTable>() {
+            @Override
+            public void onSuccess(List<NoteTable> list) {
+                for (NoteTable noteTable:list){
+                    ContentValues values = new ContentValues();
+                    values.put("objectId",noteTable.getObjectId());
+                    new UpdateNoteToDB(context).updateForSynchronization(values,date);
+                }
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+            }
+        });
+
     }
 
 }

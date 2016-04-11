@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.zhanghao.youdaonote.ActivityCollector;
 import com.zhanghao.youdaonote.R;
 
 import cn.bmob.v3.BmobUser;
@@ -68,8 +69,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onSuccess() {
                 Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 finish();
+                ActivityCollector.finishAll();
             }
 
             @Override

@@ -5,8 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -49,10 +47,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void init(){
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-
         noteTab = (LinearLayout) findViewById(R.id.note_tab);
         settingTab = (LinearLayout) findViewById(R.id.setting_tab);
-
         noteImg = (ImageButton) findViewById(R.id.note_imgBtn);
         settingImg = (ImageButton) findViewById(R.id.setting_imgBtn);
 
@@ -97,13 +93,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void initEvent(){
-
         noteTab.setOnClickListener(this);
         settingTab.setOnClickListener(this);
     }
 
     private void selected(int i){
-
         resetImgs();
         switch (i){
             case 0:
@@ -126,35 +120,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         settingImg.setImageResource(R.drawable.setting_normal);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        int id = item.getItemId();
-
-        switch (id){
-            case R.id.action_settingOne:
-                Toast.makeText(this,"action_settingOne",Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.action_settingTwo:
-                Toast.makeText(this,"action_settingTwo",Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.action_settingThree:
-                Toast.makeText(this,"action_settingThree",Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    /**
+     * 拦截按键事件，实现退出确认
+     * @param keyCode
+     * @param event
+     * @return
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 

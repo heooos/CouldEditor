@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.zhanghao.youdaonote.R;
-import com.zhanghao.youdaonote.TApplication;
 import com.zhanghao.youdaonote.constants.Conf;
 
 public class WelcomeActivity extends BaseActivity {
@@ -15,16 +14,16 @@ public class WelcomeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_activity);
-
-        if (TApplication.instance.hasCurrentUser()){
-
-            handler.sendEmptyMessageDelayed(Conf.START_TO_MAIN,2000);
-        }else{
-            handler.sendEmptyMessageDelayed(Conf.START_TO_LOGIN,2000);
-        }
-    }
-
-    Handler handler=new Handler(){
+//
+//        if (TApplication.instance.hasCurrentUser()){
+//
+//            handler.sendEmptyMessageDelayed(Conf.START_TO_MAIN,2000);
+//        }else{
+//            handler.sendEmptyMessageDelayed(Conf.START_TO_LOGIN,2000);
+//        }
+//    }
+//
+    Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
@@ -39,6 +38,7 @@ public class WelcomeActivity extends BaseActivity {
             }
         }
     };
+    handler.sendEmptyMessageDelayed(Conf.START_TO_MAIN,2000);
 
-
+    }
 }

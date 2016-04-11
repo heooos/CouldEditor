@@ -3,24 +3,24 @@ package com.zhanghao.youdaonote.entity;
 import cn.bmob.v3.BmobUser;
 
 /**
+ * 用户类扩展
  * Created by ZH on 2016/3/2.
  */
 public class NoteUser extends BmobUser {
 
-    private String eMail;
     private String phoneNumber;
-
     private String userResume;
     private String userSex;
     private String userArea;
+    private String userNickname;
     private String userHeadImg;
 
-    public String geteMail() {
-        return eMail;
+    public String getUserNickname() {
+        return userNickname;
     }
 
-    public void seteMail(String eMail) {
-        this.eMail = eMail;
+    public void setUserNickname(String userNickname) {
+        this.userNickname = userNickname;
     }
 
     public String getPhoneNumber() {

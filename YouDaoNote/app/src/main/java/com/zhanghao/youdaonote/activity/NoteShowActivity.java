@@ -1,5 +1,7 @@
 package com.zhanghao.youdaonote.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
@@ -9,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zhanghao.youdaonote.R;
-import com.zhanghao.youdaonote.constants.Conf;
 import com.zhanghao.youdaonote.database.DeleteNoteFromDB;
 
 public class NoteShowActivity extends BaseActivity implements View.OnClickListener{
@@ -20,17 +21,12 @@ public class NoteShowActivity extends BaseActivity implements View.OnClickListen
     private ImageButton edit,delete;
     private String title,content,date;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.note_show_activity);
-
-        init();
-
-        edit.setOnClickListener(this);
-        delete.setOnClickListener(this);
-        back.setOnClickListener(this);
+        initView();
+        initEvent();
 
         title = getIntent().getStringExtra("title");
         content = getIntent().getStringExtra("content");
@@ -40,12 +36,18 @@ public class NoteShowActivity extends BaseActivity implements View.OnClickListen
         content_tv.setText(Html.fromHtml(content));
     }
 
-    private void init() {
+    private void initView() {
         content_tv = (TextView) findViewById(R.id.content_tv);
         title_tv = (TextView) findViewById(R.id.title_tv);
         back = (ImageView) findViewById(R.id.back);
         edit = (ImageButton) findViewById(R.id.note_show_edit);
         delete = (ImageButton) findViewById(R.id.note_show_delete);
+    }
+
+    private void initEvent() {
+        edit.setOnClickListener(this);
+        delete.setOnClickListener(this);
+        back.setOnClickListener(this);
     }
 
     @Override
@@ -60,27 +62,44 @@ public class NoteShowActivity extends BaseActivity implements View.OnClickListen
                 i.putExtra("content", content_tv.getText().toString());
                 i.putExtra("date",date);
                 i.putExtra("className","NoteShowActivity");
-                startActivityForResult(i, Conf.ACTIVITY_CODE);
+                startActivity(i);
+                finish();
+//                startActivityForResult(i, Conf.ACTIVITY_CODE);
                 break;
             case  R.id.note_show_delete:
-                DeleteNoteFromDB deleter = new DeleteNoteFromDB(this);
-                deleter.delete(date);
-                finish();
-                break;
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setTitle("警告");
+                dialog.setMessage("确定删除此条信息么？");
+                dialog.setCancelable(false);
+                dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DeleteNoteFromDB deleter = new DeleteNoteFromDB(NoteShowActivity.this);
+                        deleter.delete(date);
+                        finish();
+                    }
+                });
+                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
+                    }
+                });
+                dialog.show();
+                break;
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
-            case Conf.ACTIVITY_CODE:
-                if (resultCode == RESULT_OK){
-                    title_tv.setText(data.getExtras().getString("title"));
-                    content_tv.setText(Html.fromHtml(data.getExtras().getString("content")));
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        switch (requestCode){
+//            case Conf.ACTIVITY_CODE:
+//                if (resultCode == RESULT_OK){
+//                    title_tv.setText(data.getExtras().getString("title"));
+//                    content_tv.setText(Html.fromHtml(data.getExtras().getString("content")));
+//                }
+//                break;
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 }

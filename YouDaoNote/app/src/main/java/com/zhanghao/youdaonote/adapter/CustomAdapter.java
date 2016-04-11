@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zhanghao.youdaonote.R;
+import com.zhanghao.youdaonote.constants.Conf;
 
 import java.util.List;
 
@@ -60,6 +61,7 @@ public class CustomAdapter extends BaseAdapter {
         if (convertView == null){
             viewHolder = new ViewHolder();
             convertView = inflater.inflate(R.layout.list_cell_layout,null);
+            viewHolder.isReload = (ImageView) convertView.findViewById(R.id.noReload);
             viewHolder.image = (ImageView) convertView.findViewById(R.id.logo);
             viewHolder.title = (TextView) convertView.findViewById(R.id.listView_title);
             viewHolder.date = (TextView) convertView.findViewById(R.id.listView_data);
@@ -72,6 +74,10 @@ public class CustomAdapter extends BaseAdapter {
         viewHolder.image.setImageResource(bean.icon);
         viewHolder.title.setText(bean.noteTitle);
         viewHolder.date.setText(bean.noteDate);
+        if (bean.isReload != Conf.STATE_SYNCHRONIZATION){
+            viewHolder.isReload.setVisibility(View.VISIBLE);
+        }
+        notifyDataSetChanged();
         return convertView;
 
     }
@@ -83,5 +89,6 @@ public class CustomAdapter extends BaseAdapter {
         public ImageView image;
         public TextView title;
         public TextView date;
+        public ImageView isReload;
     }
 }

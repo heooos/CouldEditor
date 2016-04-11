@@ -10,6 +10,13 @@ public class Conf {
     public static final short START_TO_MAIN = 2;
     public static final int ACTIVITY_CODE = 3;  //请求码
 
-    public static final short ITEM_VIEWTYPE_SYNCHRONIZED = 5; //同步后的view类型
-    public static final short ITEM_VIEWTYPE_NOT_SYNCHRONIZED = 6; //未同步的view类型
+    public static final int NICKNAME_SETTING = 1; //同步后的view类型
+    public static final int SEX_SETTING = 2; //未同步的view类型
+
+    public static final int AREA_SETTING = 3;
+    public static final int RESUME_SETTING = 4;
+
+    public static final int STATE_NOSYNCHRONIZATION = 0;
+    public static final int STATE_SYNCHRONIZATION = 1;
+    public static final int STATE_EDIT = 3;
 }

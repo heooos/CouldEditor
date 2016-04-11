@@ -3,6 +3,7 @@ package com.zhanghao.youdaonote.entity;
 import cn.bmob.v3.BmobObject;
 
 /**
+ *
  * Created by ZH on 2016/3/3.
  */
 public class NoteTable extends BmobObject {
@@ -11,6 +12,14 @@ public class NoteTable extends BmobObject {
     private String noteTitle;
     private String noteDate;
     private String userName;
+    private int isReload;
+
+    public int getIsReload() {
+        return isReload;
+    }
+    public void setIsReload(int isReload) {
+        this.isReload = isReload;
+    }
     public void setUserName(String userName) {
         this.userName = userName;
     }

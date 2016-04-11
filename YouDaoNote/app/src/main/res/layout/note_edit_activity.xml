@@ -19,6 +19,14 @@
             android:textSize="25sp"
             android:textColor="#fff"
             android:layout_centerInParent="true"/>
+        <ImageView
+            android:id="@+id/save"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="right"
+            android:src="@drawable/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </FrameLayout>
     <LinearLayout
         android:layout_below="@id/note_edit_bar"

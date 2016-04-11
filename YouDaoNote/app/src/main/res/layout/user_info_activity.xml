@@ -25,14 +25,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#fff"
-            android:text="heooos"
+            android:text=" "
             android:padding="20dp"
             />
 
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/user_id_setting"
+        android:id="@+id/user_nickname_setting"
         android:padding="15dp"
         android:background="#fff"
         android:layout_width="wrap_content"
@@ -43,6 +43,8 @@
             android:textSize="15sp"
             android:text="昵称"/>
         <TextView
+            android:id="@+id/tv_nickname_setting"
+            android:singleLine="true"
             android:paddingRight="20dp"
             android:layout_toLeftOf="@+id/arrow1"
             android:layout_width="wrap_content"
@@ -82,6 +84,8 @@
             android:textSize="15sp"
             android:text="性别"/>
         <TextView
+            android:id="@+id/tv_sex_setting"
+            android:singleLine="true"
             android:paddingRight="20dp"
             android:layout_toLeftOf="@+id/arrow2"
             android:layout_width="wrap_content"
@@ -121,6 +125,8 @@
             android:textSize="15sp"
             android:text="地区"/>
         <TextView
+            android:singleLine="true"
+            android:id="@+id/tv_area_setting"
             android:paddingRight="20dp"
             android:layout_toLeftOf="@+id/arrow3"
             android:layout_width="wrap_content"
@@ -160,6 +166,8 @@
             android:textSize="15sp"
             android:text="个人简介"/>
         <TextView
+            android:singleLine="true"
+            android:id="@+id/tv_resume_setting"
             android:paddingRight="20dp"
             android:layout_toLeftOf="@+id/arrow4"
             android:layout_width="wrap_content"

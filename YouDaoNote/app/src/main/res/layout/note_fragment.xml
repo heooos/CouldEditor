@@ -25,6 +25,5 @@
             app:backgroundTint="#34A3E0"
             android:src="@drawable/plus"
             />
-
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>
