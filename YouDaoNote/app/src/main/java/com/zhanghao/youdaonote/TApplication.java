@@ -1,6 +1,7 @@
 package com.zhanghao.youdaonote;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.zhanghao.youdaonote.constants.Conf;
 
@@ -14,6 +15,7 @@ public class TApplication extends Application {
 
     public static TApplication instance;
     public static BmobUser user;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,5 +32,10 @@ public class TApplication extends Application {
 
         user = new BmobUser().getCurrentUser(this);
         return user;
+    }
+
+    @Override
+    public Context getApplicationContext() {
+        return super.getApplicationContext();
     }
 }

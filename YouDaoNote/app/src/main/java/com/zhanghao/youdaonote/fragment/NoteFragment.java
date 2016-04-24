@@ -141,17 +141,17 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
      */
     private void synchroNoReloadData() {
 
+        final UpdateNoteToDB updateNoteToDB = new UpdateNoteToDB(getContext());
         queryNoteFromDB = new QueryNoteFromDB(getContext());
 
-        Cursor cursor0 = queryNoteFromDB.getNoReloadData(0);
-
-        UpdateNoteToDB updateNoteToDB = new UpdateNoteToDB(getContext());
+        final Cursor cursor0 = queryNoteFromDB.getNoReloadData(Conf.STATE_NOSYNCHRONIZATION);
         QueryNoteFromWebDB queryNoteFromWebDB = new QueryNoteFromWebDB(getContext());
 
         BmobUser user = BmobUser.getCurrentUser(getContext());
         String userName = user.getUsername();
-
+        //同步笔记
         while ( cursor0 !=null && cursor0.moveToNext()){
+
             ContentValues values = new ContentValues();
             values.put("isReload", Conf.STATE_SYNCHRONIZATION);
             values.put("ID", userName);
@@ -166,6 +166,9 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
             updateNoteToDB.updateForSynchronization(values, cursor3.getString(cursor3.getColumnIndex("date")));
             queryNoteFromWebDB.QueryNoteAndUpdate(cursor3.getString(cursor3.getColumnIndex("objectId")), cursor3.getString(cursor3.getColumnIndex("title")), cursor3.getString(cursor3.getColumnIndex("content")));
         }
+
+
+
         dataRefresh();
         Toast.makeText(getContext(),"同步完成",Toast.LENGTH_SHORT).show();
     }

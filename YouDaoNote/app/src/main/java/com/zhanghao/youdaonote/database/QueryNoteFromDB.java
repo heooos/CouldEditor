@@ -75,4 +75,8 @@ public class QueryNoteFromDB {
         return null;
     }
 
+    public Cursor queryAll(){
+        return dbRead.rawQuery("select * from NoteContent",null);
+    }
+
 }

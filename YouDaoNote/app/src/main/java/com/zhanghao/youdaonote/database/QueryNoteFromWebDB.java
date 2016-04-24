@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.zhanghao.youdaonote.DateTool;
+import com.zhanghao.youdaonote.tool.DateTool;
 import com.zhanghao.youdaonote.TApplication;
 import com.zhanghao.youdaonote.entity.NoteTable;
 
@@ -81,7 +81,7 @@ public class QueryNoteFromWebDB {
             public void onSuccess(List<NoteTable> list) {
                 for (NoteTable noteTable:list){
                     Log.d("noteTable",noteTable.getObjectId());
-                    new UpdateNoteToWebDB(context).update(noteTable.getObjectId(), title, content, new DateTool().getCurrentDate());;
+                    new UpdateNoteToWebDB(context).update(noteTable.getObjectId(), title, content, new DateTool().getCurrentDate(1));
                 }
             }
 

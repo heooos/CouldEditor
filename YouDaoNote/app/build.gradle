@@ -4,6 +4,9 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
+    //**bmob-sdk:3.4.6版本依赖包，用于兼容Android6.0系统**
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         applicationId "com.zhanghao.youdaonote"
         minSdkVersion 15
@@ -24,9 +27,11 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
-    //bmob-sdk ：Bmob的android sdk包
-    compile 'cn.bmob.android:bmob-sdk:3.4.5'
-    //bmob-push：Bmob的推送包
-    compile 'cn.bmob.android:bmob-push:0.6'
     compile files('libs/MarkdownView.jar')
+    //bmob-sdk：Bmob的android sdk包
+    //bmob-sdk:3.4.6需要依赖support-v4（23.2.1）、okhttp（2.4.0）、okio（2.4.0）及org.apache.http.legacy包，具体可查看下面注释[3]的解释
+    compile 'cn.bmob.android:bmob-sdk:3.4.6'
+    compile 'com.android.support:support-v4:23.2.1'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okio:okio:1.4.0'
 }

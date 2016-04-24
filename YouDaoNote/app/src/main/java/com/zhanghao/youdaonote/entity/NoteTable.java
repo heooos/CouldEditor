@@ -13,7 +13,14 @@ public class NoteTable extends BmobObject {
     private String noteDate;
     private String userName;
     private int isReload;
+    private String webUri;
 
+    public String getWebUri() {
+        return webUri;
+    }
+    public void setWebUri(String webUri) {
+        this.webUri = webUri;
+    }
     public int getIsReload() {
         return isReload;
     }

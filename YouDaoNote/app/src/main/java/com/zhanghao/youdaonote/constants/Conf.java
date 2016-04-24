@@ -16,7 +16,7 @@ public class Conf {
     public static final int AREA_SETTING = 3;
     public static final int RESUME_SETTING = 4;
 
-    public static final int STATE_NOSYNCHRONIZATION = 0;
-    public static final int STATE_SYNCHRONIZATION = 1;
-    public static final int STATE_EDIT = 3;
+    public static final int STATE_NOSYNCHRONIZATION = 0;  //内容未进行同步
+    public static final int STATE_SYNCHRONIZATION = 1;   //内容已同步
+    public static final int STATE_EDIT = 3;    //已修改
 }

@@ -25,6 +25,7 @@ public class DataBase extends SQLiteOpenHelper {
         "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
         "ID TEXT DEFAULT \"\","+
         "isReload INTEGER DEFAULT \"\","+
+        "webUri TEXT DEFAULT \"\","+
         "objectId TEXT DEFAULT \"\","+
         "date TEXT DEFAULT \"\","+
         "title TEXT DEFAULT \"\","+

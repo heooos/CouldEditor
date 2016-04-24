@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.zhanghao.youdaonote.DateTool;
+import com.zhanghao.youdaonote.tool.DateTool;
 
 /**
  * Created by ZH on 2016/3/1.
@@ -31,7 +31,7 @@ public class UpdateNoteToDB {
         values.put("title",title);
         values.put("content", content);
         values.put("isReload",isReload);
-        values.put("date", new DateTool().getCurrentDate());
+        values.put("date", new DateTool().getCurrentDate(1));
         dbWrite.update("NoteContent", values, "date = ?", new String[]{date});
     }
 
