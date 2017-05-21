@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "25.0.3"
 
     //**bmob-sdk:3.4.6版本依赖包，用于兼容Android6.0系统**
     useLibrary 'org.apache.http.legacy'

@@ -51,7 +51,7 @@ public class QueryNoteFromWebDB {
                     Cursor cursor2 = queryNoteFromDB.queryByDate(noteTable.getNoteDate());
                     if ((!cursor1.moveToNext()) && (!cursor2.moveToNext())){
                         addNoteToDB = new AddNoteToDB(context);
-                        addNoteToDB.addToDB(noteTable.getNoteDate(),noteTable.getNoteTitle(),noteTable.getNoteContent(),noteTable.getIsReload(),noteTable.getObjectId(),userName);
+                        addNoteToDB.addToDB(noteTable.getNoteDate(),noteTable.getWebUri(),noteTable.getNoteTitle(),noteTable.getNoteContent(),noteTable.getIsReload(),noteTable.getObjectId(),userName);
                     }
                 }
                 iRefreshListener.onRefresh();

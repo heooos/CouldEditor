@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -39,9 +41,14 @@ import com.zhanghao.youdaonote.database.QueryNoteFromDB;
 import com.zhanghao.youdaonote.database.QueryNoteFromWebDB;
 import com.zhanghao.youdaonote.database.UpdateNoteToDB;
 
+import java.io.File;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.listener.UploadFileListener;
 
 /**
  * 笔记列表显示界面。
@@ -51,22 +58,22 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
 
     private ListView listView;
     private FloatingActionButton fabEdit;
-    private ImageView contactImg,reload;
+    private ImageView contactImg, reload;
     public static CustomAdapter adapter;
     private QueryNoteFromDB queryNoteFromDB;
     private List<ItemBean> list;
-    private  View firstView;
+    private View firstView;
     private PopupWindow popupWindow;
     private Intent loginIntent;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        firstView = inflater.inflate(R.layout.note_fragment,container,false);
+        firstView = inflater.inflate(R.layout.note_fragment, container, false);
         loginIntent = new Intent(getContext(), LoginActivity.class);
         initView(firstView);
         initEvent();
-        if (TApplication.instance.hasCurrentUser()){
+        if (TApplication.instance.hasCurrentUser()) {
             synchroDataFromWebDB();
         }
         dataRefresh();
@@ -105,31 +112,31 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
     private void dataRefresh() {
         queryNoteFromDB = new QueryNoteFromDB(getContext());
         list = queryNoteFromDB.readNote();
-        adapter = new CustomAdapter(getContext(),list);
+        adapter = new CustomAdapter(getContext(), list);
         listView.setAdapter(adapter);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fab:
-                Intent editIntent = new Intent(getContext(),NoteEditActivity.class);
-                editIntent.putExtra("className","NoteFragment");
+                Intent editIntent = new Intent(getContext(), NoteEditActivity.class);
+                editIntent.putExtra("className", "NoteFragment");
                 startActivity(editIntent);
                 break;
             case R.id.contact_img:
                 Intent userInfoIntent = new Intent(getContext(), UserInfoActivity.class);
-                if (TApplication.instance.hasCurrentUser()){
+                if (TApplication.instance.hasCurrentUser()) {
                     startActivity(userInfoIntent);
-                }else {
+                } else {
                     startActivity(loginIntent);
                 }
 
                 break;
             case R.id.reload:
-                if (TApplication.instance.hasCurrentUser()){
+                if (TApplication.instance.hasCurrentUser()) {
                     synchroNoReloadData();
-                }else {
+                } else {
                     startActivity(loginIntent);
                 }
                 break;
@@ -148,44 +155,96 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
         QueryNoteFromWebDB queryNoteFromWebDB = new QueryNoteFromWebDB(getContext());
 
         BmobUser user = BmobUser.getCurrentUser(getContext());
-        String userName = user.getUsername();
+        final String userName = user.getUsername();
         //同步笔记
-        while ( cursor0 !=null && cursor0.moveToNext()){
+        while (cursor0 != null && cursor0.moveToNext()) {
 
             ContentValues values = new ContentValues();
             values.put("isReload", Conf.STATE_SYNCHRONIZATION);
             values.put("ID", userName);
             updateNoteToDB.updateForSynchronization(values, cursor0.getString(cursor0.getColumnIndex("date")));
-            new AddNoteToWebDB(getContext(),cursor0.getString(cursor0.getColumnIndex("title")),cursor0.getString(cursor0.getColumnIndex("content")),cursor0.getString(cursor0.getColumnIndex("date")),1,userName);
+            final String title = cursor0.getString(cursor0.getColumnIndex("title"));
+            final String content = cursor0.getString(cursor0.getColumnIndex("content"));
+            final String date = cursor0.getString(cursor0.getColumnIndex("date"));
+            Pattern p = Pattern.compile("((?:\\/[\\w\\.\\-]+)+)");
+            final Matcher m = p.matcher(content);
+            if (m.find()) {
+                String path = m.group(1);
+                Log.d("这是一个Log", path);
+                final BmobFile bmobFile = new BmobFile(new File(path));
+                bmobFile.uploadblock(getContext(), new UploadFileListener() {
+                    @Override
+                    public void onSuccess() {
+                        String url = bmobFile.getFileUrl(getContext());
+                        Message message = new Message();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("webUri", url);
+                        bundle.putString("title", title);
+                        bundle.putString("content", content);
+                        bundle.putString("date", date);
+                        bundle.putString("userName", userName);
+                        message.setData(bundle);
+                        handler.sendMessage(message);
+                        Toast.makeText(getContext(), "上传成功", Toast.LENGTH_SHORT).show();
+                        Log.d("成功后的url", url);
+                    }
+
+                    @Override
+                    public void onFailure(int i, String s) {
+                        Toast.makeText(getContext(), "上传失败"+ i, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onProgress(Integer value) {
+                        Log.d("上传进度", value.toString());
+                        super.onProgress(value);
+                    }
+                });
+            }
+
+//            new AddNoteToWebDB(getContext(),cursor0.getString(cursor0.getColumnIndex("title")),cursor0.getString(cursor0.getColumnIndex("content")),cursor0.getString(cursor0.getColumnIndex("date")),1,userName);
         }
+        cursor0.close();
 
         Cursor cursor3 = queryNoteFromDB.getNoReloadData(Conf.STATE_EDIT);
-        while (cursor3!=null && cursor3.moveToNext()){
+        while (cursor3 != null && cursor3.moveToNext()) {
             ContentValues values = new ContentValues();
             values.put("isReload", Conf.STATE_SYNCHRONIZATION);
             updateNoteToDB.updateForSynchronization(values, cursor3.getString(cursor3.getColumnIndex("date")));
             queryNoteFromWebDB.QueryNoteAndUpdate(cursor3.getString(cursor3.getColumnIndex("objectId")), cursor3.getString(cursor3.getColumnIndex("title")), cursor3.getString(cursor3.getColumnIndex("content")));
         }
-
-
+        cursor3.close();
 
         dataRefresh();
-        Toast.makeText(getContext(),"同步完成",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "同步完成", Toast.LENGTH_SHORT).show();
     }
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.d("获取到的url", msg.getData().getString("webUri"));
+            new UpdateNoteToDB(getContext()).update(msg.getData().getString("webUri"), msg.getData().getString("title"), msg.getData().getString("content"), msg.getData().getString("date"), 1);
+            new AddNoteToWebDB(getContext(), msg.getData().getString("webUri"), msg.getData().getString("title"), msg.getData().getString("content"), msg.getData().getString("date"), 1, msg.getData().getString("userName"));
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ItemBean bean = list.get(position);
-        Intent showIntent = new Intent(getContext(),NoteShowActivity.class);
-        showIntent.putExtra("title",bean.noteTitle);
+        Intent showIntent = new Intent(getContext(), NoteShowActivity.class);
+        showIntent.putExtra("title", bean.noteTitle);
         showIntent.putExtra("content", bean.noteContent);
         showIntent.putExtra("date", bean.noteDate);
+        // TODO: 2017/2/10 将webUrl传到下一页面
+        showIntent.putExtra("webUri",bean.webUri);
         startActivity(showIntent);
     }
 
 
     /**
      * 长按弹出系统提示框
+     *
      * @param parent
      * @param view
      * @param position
@@ -199,14 +258,14 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     private void showPopupWindows(final int itemPosition) {
-        PopupWindowListener listener=new PopupWindowListener(itemPosition);
-        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.popupwindow_layout,null);
+        PopupWindowListener listener = new PopupWindowListener(itemPosition);
+        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.popupwindow_layout, null);
         Button cancel = (Button) contentView.findViewById(R.id.popupWindows_cancel);
         Button delete = (Button) contentView.findViewById(R.id.popupWindows_delete);
 
         TextView tv_showName = (TextView) contentView.findViewById(R.id.popupWindows_fileName);
 
-        popupWindow = new PopupWindow(contentView, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT,true);
+        popupWindow = new PopupWindow(contentView, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT, true);
         popupWindow.setTouchable(true);
         popupWindow.setFocusable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xb0000000));
@@ -232,16 +291,17 @@ public class NoteFragment extends Fragment implements View.OnClickListener, Adap
     /**
      * 内部类处理popupwindows视图的点击事件
      */
-    class PopupWindowListener implements View.OnClickListener{
+    class PopupWindowListener implements View.OnClickListener {
 
         private final int itemPosition;
 
         public PopupWindowListener(int itemPosition) {
-            this.itemPosition=itemPosition;
+            this.itemPosition = itemPosition;
         }
+
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.popupWindows_cancel:
                     popupWindow.dismiss();
                     break;

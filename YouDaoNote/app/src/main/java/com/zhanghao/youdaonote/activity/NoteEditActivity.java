@@ -13,7 +13,6 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Spannable;
@@ -29,6 +28,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.zhanghao.youdaonote.R;
+import com.zhanghao.youdaonote.TApplication;
 import com.zhanghao.youdaonote.constants.Conf;
 import com.zhanghao.youdaonote.database.AddNoteToDB;
 import com.zhanghao.youdaonote.database.QueryNoteFromDB;
@@ -48,12 +48,12 @@ import java.io.InputStream;
  */
 public class NoteEditActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText titleEditText,contentEditText;
-    private String title,content,date;
+    private EditText titleEditText, contentEditText;
+    private String title, content, date;
     private ScrollView view;
-    private ImageView back,save,takePhotos,takeVideo;
+    private ImageView back, save, takePhotos, takeVideo;
     private Uri originalUri;
-    private String filePath;
+//    private String filePath;
     private String FILE_NAME;
 
     @Override
@@ -62,15 +62,15 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.note_edit_activity);
 
-        filePath = Environment.getExternalStorageDirectory().toString()+"/youdaoNote";
-        Log.d("根目录", filePath);
+//        filePath = Environment.getExternalStorageDirectory().toString() + "/youdaoNote";
+//        Log.d("根目录", filePath);
 
         initView();
         initEvent();
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             Bundle b = savedInstanceState.getBundle("savedState");
-            if (b != null){
+            if (b != null) {
                 title = b.getString("title");
                 content = b.getString("content");
             }
@@ -79,12 +79,12 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
         title = getIntent().getStringExtra("title");
         date = getIntent().getStringExtra("date");
 
-        if (title != null){
+        if (title != null) {
             titleEditText.setText(title);
         }
-        if ( date != null){
+        if (date != null) {
             content = new QueryNoteFromDB(this).readContent(date);
-            SpannableString ss = new NoteShowActivity().getSpannableString(content,NoteEditActivity.this);
+            SpannableString ss = new NoteShowActivity().getSpannableString(content, NoteEditActivity.this);
 
             contentEditText.setText(ss);
             contentEditText.setSelection(ss.length());
@@ -105,7 +105,7 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
         takeVideo = (ImageView) findViewById(R.id.note_edit_video);
     }
 
-    private void initEvent(){
+    private void initEvent() {
 
         view.setOnClickListener(this);
         back.setOnClickListener(this);
@@ -116,7 +116,7 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.myScrollView:
                 contentEditText.requestFocus();
                 break;
@@ -137,7 +137,7 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
 
     private void ChooseVideo() {
         LayoutInflater inflater = LayoutInflater.from(this);
-        View v = inflater.inflate(R.layout.alertdialog_video_cell,null);
+        View v = inflater.inflate(R.layout.alertdialog_video_cell, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("选取视频");
         builder.setView(v);
@@ -149,7 +149,7 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
                 Intent intent = new Intent();
                 intent.setAction("android.media.action.VIDEO_CAPTURE");
                 intent.addCategory("android.intent.category.DEFAULT");
-                File file = new File(filePath + "/" + new DateTool().getCurrentDate(2) + ".mp4");
+                File file = new File(TApplication.filePath + "/" + new DateTool().getCurrentDate(2) + ".mp4");
                 Uri uri = Uri.fromFile(file);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 startActivityForResult(intent, 0);
@@ -207,14 +207,15 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
 
     /**
      * 复制文件到指定文件夹下
+     *
      * @param bitmap
      */
-    private void CreatFile(Bitmap bitmap) {
-        File file = new File(filePath);
-        if (!file.exists()){
-            file.mkdirs();
-        }
-       new AsyncTask<Bitmap, Void, File>() {
+    private void CreateFile(Bitmap bitmap) {
+//        File file = new File(filePath);
+//        if (!file.exists()) {
+//            file.mkdirs();
+//        }
+        new AsyncTask<Bitmap, Void, File>() {
 
             @Override
             protected File doInBackground(Bitmap... params) {
@@ -225,22 +226,20 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
                 params[0].compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 InputStream in = new ByteArrayInputStream(baos.toByteArray());
 
-                File file = new File(filePath, FILE_NAME + ".jpg");
+                File file = new File(TApplication.filePath, FILE_NAME + ".jpg");
 
                 try {
                     fos = new FileOutputStream(file);
                     byte[] buffer = new byte[1024];
                     int length;
-                    while ((length = in.read(buffer))>0){
-                        fos.write(buffer,0,length);
+                    while ((length = in.read(buffer)) > 0) {
+                        fos.write(buffer, 0, length);
                     }
                     fos.flush();
                     fos.close();
                     in.close();
 
                     return file;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -253,7 +252,7 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
                 Bitmap _bitmap = BitmapFactory.decodeFile(file.getPath());
                 Uri _uri = Uri.fromFile(file);
                 if (_bitmap != null) {
-                    insertIntoEditText(getBitmapMime(NoteEditActivity.this,_bitmap, _uri));
+                    insertIntoEditText(getBitmapMime(NoteEditActivity.this, _bitmap, _uri));
                 } else {
                     Toast.makeText(NoteEditActivity.this, "获取图片失败",
                             Toast.LENGTH_SHORT).show();
@@ -270,8 +269,8 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
         super.onActivityResult(requestCode, resultCode, data);
 
         ContentResolver resolver = getContentResolver();
-        if (resultCode == RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case 1:
                     Bitmap bitmap;
                     originalUri = data.getData();
@@ -279,15 +278,15 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
                         Bitmap originalBitmap = BitmapFactory.decodeStream(resolver
                                 .openInputStream(originalUri));
                         bitmap = resizeImage(originalBitmap, 500, 700);
-                        CreatFile(bitmap);
+                        CreateFile(bitmap);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
                     break;
                 case 2:
                     Bitmap bitmap1 = data.getParcelableExtra("data");
-                    Bitmap bitmap2 = resizeImage(bitmap1,500,700);
-                    CreatFile(bitmap2);
+                    Bitmap bitmap2 = resizeImage(bitmap1, 500, 700);
+                    CreateFile(bitmap2);
                     break;
                 case 0:
                     String path = data.getData().getPath();
@@ -297,7 +296,7 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
                     Bitmap bitmap3 = media.getFrameAtTime();
                     Bitmap bitmap4 = resizeImage(bitmap3, 500, 700);
                     Bitmap bitmap5 = NoteShowActivity.addPlayIcon(bitmap4);
-                    insertIntoEditText(getBitmapMime(NoteEditActivity.this,bitmap5, data.getData()));
+                    insertIntoEditText(getBitmapMime(NoteEditActivity.this, bitmap5, data.getData()));
                     break;
                 case 3:
                     String path1 = data.getData().getPath();
@@ -307,13 +306,14 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
                     Bitmap bitmap6 = media1.getFrameAtTime();
                     Bitmap bitmap7 = resizeImage(bitmap6, 500, 700);
                     Bitmap bitmap8 = NoteShowActivity.addPlayIcon(bitmap7);
-                    insertIntoEditText(getBitmapMime(NoteEditActivity.this,bitmap8, data.getData()));
+                    insertIntoEditText(getBitmapMime(NoteEditActivity.this, bitmap8, data.getData()));
                     break;
             }
         }
     }
 
-    public static SpannableString getBitmapMime(Context context,Bitmap pic, Uri uri) {
+    public static SpannableString getBitmapMime(Context context, Bitmap pic, Uri uri) {
+        //在此处获取到图片的位置 插入到ss中
         String path = uri.getPath();
         SpannableString ss = new SpannableString(path);
         ImageSpan span = new ImageSpan(context, pic);
@@ -332,14 +332,14 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
 
     /**
      * 修改bitmap大小
+     *
      * @param bitmap
      * @param w
      * @param h
      * @return
      */
 
-    public static Bitmap resizeImage(Bitmap bitmap, int w, int h)
-    {
+    public static Bitmap resizeImage(Bitmap bitmap, int w, int h) {
         Bitmap BitmapOrg = bitmap;
         int width = BitmapOrg.getWidth();
         int height = BitmapOrg.getHeight();
@@ -365,20 +365,21 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
      * 保存按钮逻辑
      */
     private void onSave() {
-        if (!(titleEditText.getText().toString().equals("") && contentEditText.getText().toString().equals(""))){
+        if (!(titleEditText.getText().toString().equals("") && contentEditText.getText().toString().equals(""))) {
             addNoteToDB();
             finish();
-        }else {
-            Toast.makeText(this,"内容为空",Toast.LENGTH_SHORT).show();
-            }
+        } else {
+            Toast.makeText(this, "内容为空", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
      * 返回按钮逻辑
+     *
      * @return
      */
-    private void onBack(){
-        if (!(titleEditText.getText().toString().equals("") && contentEditText.getText().toString().equals(""))){
+    private void onBack() {
+        if (!(titleEditText.getText().toString().equals("") && contentEditText.getText().toString().equals(""))) {
             //  非空退出提示
             AlertDialog.Builder dialog = new AlertDialog.Builder(this);
             dialog.setTitle("警告");
@@ -396,17 +397,18 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
                 }
             });
             dialog.show();
-        }else {
+        } else {
             finish();
-         }
+        }
     }
 
 
     /**
      * 用于保存意外退出的状态
+     *
      * @return
      */
-    private Bundle saveState(){
+    private Bundle saveState() {
 
         Bundle bundle = new Bundle();
         bundle.putString("title", titleEditText.getText().toString());
@@ -424,20 +426,20 @@ public class NoteEditActivity extends BaseActivity implements View.OnClickListen
     /**
      * 添加数据到数据库
      */
-    private void addNoteToDB(){
-        if (getIntent().getStringExtra("className").equals("NoteFragment")){
+    private void addNoteToDB() {
+        if (getIntent().getStringExtra("className").equals("NoteFragment")) {
             AddNoteToDB addNoteToDB = new AddNoteToDB(this);
-            addNoteToDB.addToDB(new DateTool().getCurrentDate(1),titleEditText.getText().toString(),contentEditText.getText().toString(), Conf.STATE_NOSYNCHRONIZATION, null,null);
-        }else {
+            addNoteToDB.addToDB(new DateTool().getCurrentDate(1), titleEditText.getText().toString(), contentEditText.getText().toString(), Conf.STATE_NOSYNCHRONIZATION, null, null);
+        } else {
             UpdateNoteToDB updater = new UpdateNoteToDB(this);
             QueryNoteFromDB queryNoteFromDB = new QueryNoteFromDB(this);
             Cursor cursor = queryNoteFromDB.queryByDate(getIntent().getStringExtra("date"));
-            Log.d("getIntent()",getIntent().getStringExtra("date"));
+            Log.d("getIntent()", getIntent().getStringExtra("date"));
             cursor.moveToNext();
-            if (cursor.getInt(cursor.getColumnIndex("isReload")) == Conf.STATE_NOSYNCHRONIZATION){
-                updater.update(titleEditText.getText().toString(),contentEditText.getText().toString(),date,Conf.STATE_NOSYNCHRONIZATION);
-            }else {
-                updater.update(titleEditText.getText().toString(),contentEditText.getText().toString(),date,Conf.STATE_EDIT);
+            if (cursor.getInt(cursor.getColumnIndex("isReload")) == Conf.STATE_NOSYNCHRONIZATION) {
+                updater.update("",titleEditText.getText().toString(), contentEditText.getText().toString(), date, Conf.STATE_NOSYNCHRONIZATION);
+            } else {
+                updater.update("",titleEditText.getText().toString(), contentEditText.getText().toString(), date, Conf.STATE_EDIT);
             }
         }
     }

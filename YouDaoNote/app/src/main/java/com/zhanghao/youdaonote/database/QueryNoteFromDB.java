@@ -30,14 +30,15 @@ public class QueryNoteFromDB {
 
     public List<ItemBean> readNote(){
         Cursor cursor = dbRead.rawQuery("select * from NoteContent order by date desc",null);
-        String title,content,date;
+        String title,content,date,webUri;
         int isReload;
         while (cursor.moveToNext()){
             title = cursor.getString(cursor.getColumnIndex("title"));
             content = cursor.getString(cursor.getColumnIndex("content"));
             date = cursor.getString(cursor.getColumnIndex("date"));
             isReload = cursor.getInt(cursor.getColumnIndex("isReload"));
-            list.add(new ItemBean(R.drawable.logo,title,content,date,isReload));
+            webUri = cursor.getString(cursor.getColumnIndex("webUri"));
+            list.add(new ItemBean(R.drawable.logo,title,content,webUri,date,isReload));
         }
         cursor.close();
         return list;

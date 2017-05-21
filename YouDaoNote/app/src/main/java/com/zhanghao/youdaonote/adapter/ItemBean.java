@@ -10,13 +10,15 @@ public class ItemBean {
     public String noteDate;
     public String noteContent;
     public int isReload;
+    public String webUri;
 
-    public ItemBean(int icon, String noteTitle,String noteContent,String noteDate,int isReload){
+    public ItemBean(int icon, String noteTitle,String noteContent,String webUri,String noteDate,int isReload){
         this.icon = icon;
         this.noteTitle = noteTitle;
         this.noteContent = noteContent;
         this.noteDate = noteDate;
         this.isReload = isReload;
+        this.webUri = webUri;
     }
 
 }

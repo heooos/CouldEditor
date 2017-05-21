@@ -18,6 +18,18 @@ public class AddNoteToDB {
         dataBase = new DataBase(_context);
         dbWrite = dataBase.getWritableDatabase();
     }
+    public void addToDB(String date,String webUri,String title,String content,int isReload,String objId,String userName){
+        ContentValues values = new ContentValues();
+        values.put("date", date);
+        values.put("title", title);
+        values.put("content", content);
+        values.put("isReload",isReload);
+        values.put("objectId",objId);
+        values.put("ID", userName);
+        values.put("webUri",webUri);
+        dbWrite.insert("NoteContent", null, values);
+    }
+
     public void addToDB(String date,String title,String content,int isReload,String objId,String userName){
         ContentValues values = new ContentValues();
         values.put("date", date);
@@ -28,6 +40,5 @@ public class AddNoteToDB {
         values.put("ID", userName);
         dbWrite.insert("NoteContent", null, values);
     }
-
 
 }

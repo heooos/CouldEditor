@@ -16,10 +16,12 @@ public class AddNoteToWebDB {
     private String title,content,date,userName;
     private int isReload;
     private Context context;
+    private String webUri;
 
-    public AddNoteToWebDB(Context context,String title,String content,String date,int isReload,String userName){
+    public AddNoteToWebDB(Context context,String webUri,String title,String content,String date,int isReload,String userName){
         this.isReload = isReload;
         this.context = context;
+        this.webUri = webUri;
         this.title =title;
         this.content = content;
         this.date = date;
@@ -34,6 +36,7 @@ public class AddNoteToWebDB {
         noteTable.setNoteDate(date);
         noteTable.setUserName(userName);
         noteTable.setIsReload(isReload);
+        noteTable.setWebUri(webUri);
         noteTable.save(context, new SaveListener() {
             @Override
             public void onSuccess() {
